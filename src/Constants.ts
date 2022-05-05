@@ -41,6 +41,7 @@ export const CONSTANTS: {
   IntelligenceInfiltrationWeight: number;
   IntelligenceCrimeBaseExpGain: number;
   IntelligenceProgramBaseExpGain: number;
+  IntelligenceGraftBaseExpGain: number;
   IntelligenceTerminalHackBaseExpGain: number;
   IntelligenceSingFnBaseExpGain: number;
   IntelligenceClassBaseExpGain: number;
@@ -62,25 +63,6 @@ export const CONSTANTS: {
   GameCyclesPerQuarterHour: number;
   MillisecondsPerFiveMinutes: number;
   GameCyclesPerFiveMinutes: number;
-  FactionWorkHacking: string;
-  FactionWorkField: string;
-  FactionWorkSecurity: string;
-  WorkTypeCompany: string;
-  WorkTypeCompanyPartTime: string;
-  WorkTypeFaction: string;
-  WorkTypeCreateProgram: string;
-  WorkTypeStudyClass: string;
-  WorkTypeCrime: string;
-  ClassStudyComputerScience: string;
-  ClassDataStructures: string;
-  ClassNetworks: string;
-  ClassAlgorithms: string;
-  ClassManagement: string;
-  ClassLeadership: string;
-  ClassGymStrength: string;
-  ClassGymDefense: string;
-  ClassGymDexterity: string;
-  ClassGymAgility: string;
   ClassDataStructuresBaseCost: number;
   ClassNetworksBaseCost: number;
   ClassAlgorithmsBaseCost: number;
@@ -93,26 +75,20 @@ export const CONSTANTS: {
   ClassAlgorithmsBaseExp: number;
   ClassManagementBaseExp: number;
   ClassLeadershipBaseExp: number;
-  CrimeShoplift: string;
-  CrimeRobStore: string;
-  CrimeMug: string;
-  CrimeLarceny: string;
-  CrimeDrugs: string;
-  CrimeBondForgery: string;
-  CrimeTraffickArms: string;
-  CrimeHomicide: string;
-  CrimeGrandTheftAuto: string;
-  CrimeKidnap: string;
-  CrimeAssassination: string;
-  CrimeHeist: string;
   CodingContractBaseFactionRepGain: number;
   CodingContractBaseCompanyRepGain: number;
   CodingContractBaseMoneyGain: number;
+  AugmentationGraftingCostMult: number;
+  AugmentationGraftingTimeBase: number;
+  SoACostMult: number;
+  SoARepMult: number;
+  EntropyEffect: number;
   TotalNumBitNodes: number;
+  Donations: number; // number of blood/plasma/palette donation the dev have verified., boosts NFG
   LatestUpdate: string;
 } = {
-  VersionString: "1.4.0",
-  VersionNumber: 10,
+  VersionString: "1.6.4",
+  VersionNumber: 16,
 
   // Speed (in ms) at which the main loop is updated
   _idleSpeed: 200,
@@ -180,6 +156,7 @@ export const CONSTANTS: {
   IntelligenceInfiltrationWeight: 0.1, // Weight for how much int affects infiltration success rates
   IntelligenceCrimeBaseExpGain: 0.05,
   IntelligenceProgramBaseExpGain: 0.1, // Program required hack level divided by this to determine int exp gain
+  IntelligenceGraftBaseExpGain: 0.05,
   IntelligenceTerminalHackBaseExpGain: 200, // Hacking exp divided by this to determine int exp gain
   IntelligenceSingFnBaseExpGain: 1.5,
   IntelligenceClassBaseExpGain: 0.01,
@@ -214,27 +191,6 @@ export const CONSTANTS: {
 
   // Player Work & Action
   BaseFocusBonus: 0.8,
-  FactionWorkHacking: "Faction Hacking Work",
-  FactionWorkField: "Faction Field Work",
-  FactionWorkSecurity: "Faction Security Work",
-
-  WorkTypeCompany: "Working for Company",
-  WorkTypeCompanyPartTime: "Working for Company part-time",
-  WorkTypeFaction: "Working for Faction",
-  WorkTypeCreateProgram: "Working on Create a Program",
-  WorkTypeStudyClass: "Studying or Taking a class at university",
-  WorkTypeCrime: "Committing a crime",
-
-  ClassStudyComputerScience: "studying Computer Science",
-  ClassDataStructures: "taking a Data Structures course",
-  ClassNetworks: "taking a Networks course",
-  ClassAlgorithms: "taking an Algorithms course",
-  ClassManagement: "taking a Management course",
-  ClassLeadership: "taking a Leadership course",
-  ClassGymStrength: "training your strength at a gym",
-  ClassGymDefense: "training your defense at a gym",
-  ClassGymDexterity: "training your dexterity at a gym",
-  ClassGymAgility: "training your agility at a gym",
 
   ClassDataStructuresBaseCost: 40,
   ClassNetworksBaseCost: 80,
@@ -250,45 +206,42 @@ export const CONSTANTS: {
   ClassManagementBaseExp: 2,
   ClassLeadershipBaseExp: 4,
 
-  CrimeShoplift: "shoplift",
-  CrimeRobStore: "rob a store",
-  CrimeMug: "mug someone",
-  CrimeLarceny: "commit larceny",
-  CrimeDrugs: "deal drugs",
-  CrimeBondForgery: "forge corporate bonds",
-  CrimeTraffickArms: "traffick illegal arms",
-  CrimeHomicide: "commit homicide",
-  CrimeGrandTheftAuto: "commit grand theft auto",
-  CrimeKidnap: "kidnap someone for ransom",
-  CrimeAssassination: "assassinate a high-profile target",
-  CrimeHeist: "pull off the ultimate heist",
-
   // Coding Contract
   // TODO: Move this into Coding contract implementation?
   CodingContractBaseFactionRepGain: 2500,
   CodingContractBaseCompanyRepGain: 4000,
   CodingContractBaseMoneyGain: 75e6,
 
+  // Augmentation grafting multipliers
+  AugmentationGraftingCostMult: 3,
+  AugmentationGraftingTimeBase: 3600000,
+
+  // SoA mults
+  SoACostMult: 7,
+  SoARepMult: 1.3,
+
+  // Value raised to the number of entropy stacks, then multiplied to player multipliers
+  EntropyEffect: 0.98,
+
   // BitNode/Source-File related stuff
   TotalNumBitNodes: 24,
 
+  Donations: 7,
+
   LatestUpdate: `
-    v1.4.0 - 2022-01-18 Sharing is caring
-    -------------------------------------
+  v1.6.3 - 2022-04-01 Few stanek fixes
+  ----------------------------
 
-    ** Computer sharing **
+   Stanek Gift 
 
-    * A new mechanic has been added, it's is invoked by calling the new function 'share'.
-      This mechanic helps you farm reputation faster.
+  * Has a minimum size of 2x3
+  * Active Fragment property 'avgCharge' renamed to 'highestCharge'
+  * Formula for fragment effect updated to make 561% more sense. 
+    Now you can charge to your heart content.
+  * Logs for the 'chargeFragment' function updated.
 
-    ** gang **
+   Misc. 
 
-    * Installing augs means losing a little bit of ascension multipliers.
-
-    ** There's more but I'm going to write it later. **
-
-    ** Misc. **
-
-    * Nerf noodle bar.
+  * Nerf noodle bar.
 `,
 };

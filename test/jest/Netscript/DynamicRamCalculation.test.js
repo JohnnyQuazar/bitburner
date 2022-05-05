@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { jest, describe, expect, test } from "@jest/globals";
+import { jest, describe, expect } from "@jest/globals";
 
 import { Player } from "../../../src/Player";
 import { NetscriptFunctions } from "../../../src/NetscriptFunctions";
@@ -7,7 +6,6 @@ import { getRamCost, RamCostConstants } from "../../../src/Netscript/RamCostGene
 import { Environment } from "../../../src/Netscript/Environment";
 import { RunningScript } from "../../../src/Script/RunningScript";
 import { Script } from "../../../src/Script/Script";
-import { SourceFileFlags } from "../../../src/SourceFile/SourceFileFlags";
 
 jest.mock(`!!raw-loader!../NetscriptDefinitions.d.ts`, () => "", {
   virtual: true,
@@ -169,12 +167,6 @@ describe("Netscript Dynamic RAM Calculation/Generation Tests", function () {
     testEquality(workerScript.dynamicRamUsage, ScriptBaseCost);
     testEquality(workerScript.dynamicRamUsage, runningScript.ramUsage);
   }
-
-  beforeEach(function () {
-    for (let i = 0; i < SourceFileFlags.length; ++i) {
-      SourceFileFlags[i] = 3;
-    }
-  });
 
   describe("Basic Functions", function () {
     it("hack()", async function () {
@@ -701,6 +693,16 @@ describe("Netscript Dynamic RAM Calculation/Generation Tests", function () {
 
     it("getStats()", async function () {
       const f = ["getStats"];
+      await testNonzeroDynamicRamCost(f);
+    });
+
+    it("getDarkwebProgramCost()", async function () {
+      const f = ["getDarkwebProgramCost"];
+      await testNonzeroDynamicRamCost(f);
+    });
+
+    it("getDarkwebPrograms()", async function () {
+      const f = ["getDarkwebPrograms"];
       await testNonzeroDynamicRamCost(f);
     });
 

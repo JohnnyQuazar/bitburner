@@ -6,7 +6,6 @@ import * as generalMethods from "./PlayerObjectGeneralMethods";
 import * as serverMethods from "./PlayerObjectServerMethods";
 
 import { IMap } from "../../types";
-import { Resleeve } from "../Resleeving/Resleeve";
 import { Sleeve } from "../Sleeve/Sleeve";
 import { IPlayerOwnedSourceFile } from "../../SourceFile/PlayerOwnedSourceFile";
 import { Exploit } from "../../Exploits/Exploit";
@@ -38,6 +37,8 @@ import { ISkillProgress } from "../formulas/skill";
 import { PlayerAchievement } from "../../Achievements/Achievements";
 import { cyrb53 } from "../../utils/StringHelperFunctions";
 import { getRandomInt } from "../../utils/helpers/getRandomInt";
+import { CONSTANTS } from "../../Constants";
+import { WorkType, ClassType, CrimeType, PlayerFactionWorkType } from "../../utils/WorkType";
 
 export class PlayerObject implements IPlayer {
   // Class members
@@ -72,7 +73,6 @@ export class PlayerObject implements IPlayer {
   playtimeSinceLastBitnode: number;
   purchasedServers: any[];
   queuedAugmentations: IPlayerOwnedAugmentation[];
-  resleeves: Resleeve[];
   scriptProdSinceLastAug: number;
   sleeves: Sleeve[];
   sleevesFromCovenant: number;
@@ -136,17 +136,19 @@ export class PlayerObject implements IPlayer {
   bladeburner_success_chance_mult: number;
 
   createProgramReqLvl: number;
-  factionWorkType: string;
+  factionWorkType: PlayerFactionWorkType;
   createProgramName: string;
   timeWorkedCreateProgram: number;
-  crimeType: string;
+  graftAugmentationName: string;
+  timeWorkedGraftAugmentation: number;
+  crimeType: CrimeType;
   committingCrimeThruSingFn: boolean;
   singFnCrimeWorkerScript: WorkerScript | null;
   timeNeededToCompleteWork: number;
   focus: boolean;
-  className: string;
+  className: ClassType;
   currentWorkFactionName: string;
-  workType: string;
+  workType: WorkType;
   workCostMult: number;
   workExpMult: number;
   currentWorkFactionDescription: string;
@@ -169,6 +171,8 @@ export class PlayerObject implements IPlayer {
   workChaExpGainRate: number;
   workMoneyLossRate: number;
 
+  entropy: number;
+
   // Methods
   work: (numCycles: number) => boolean;
   workPartTime: (numCycles: number) => boolean;
@@ -190,7 +194,7 @@ export class PlayerObject implements IPlayer {
   canAccessBladeburner: () => boolean;
   canAccessCorporation: () => boolean;
   canAccessGang: () => boolean;
-  canAccessResleeving: () => boolean;
+  canAccessGrafting: () => boolean;
   canAfford: (cost: number) => boolean;
   gainHackingExp: (exp: number) => void;
   gainStrengthExp: (exp: number) => void;
@@ -215,6 +219,7 @@ export class PlayerObject implements IPlayer {
   hasProgram: (program: string) => boolean;
   inBladeburner: () => boolean;
   inGang: () => boolean;
+  isAwareOfGang: () => boolean;
   isQualified: (company: Company, position: CompanyPosition) => boolean;
   loseMoney: (money: number, source: string) => void;
   reapplyAllAugmentations: (resetMultipliers?: boolean) => void;
@@ -225,11 +230,11 @@ export class PlayerObject implements IPlayer {
   singularityStopWork: () => string;
   startBladeburner: (p: any) => void;
   startFactionWork: (faction: Faction) => void;
-  startClass: (costMult: number, expMult: number, className: string) => void;
+  startClass: (costMult: number, expMult: number, className: ClassType) => void;
   startCorporation: (corpName: string, additionalShares?: number) => void;
   startCrime: (
     router: IRouter,
-    crimeType: string,
+    crimeType: CrimeType,
     hackExp: number,
     strExp: number,
     defExp: number,
@@ -254,7 +259,7 @@ export class PlayerObject implements IPlayer {
   queryStatFromString: (str: string) => number;
   getIntelligenceBonus: (weight: number) => number;
   getCasinoWinnings: () => number;
-  quitJob: (company: string) => void;
+  quitJob: (company: string, sing?: boolean) => void;
   hasJob: () => boolean;
   process: (router: IRouter, numCycles?: number) => void;
   createHacknetServer: () => HacknetServer;
@@ -276,7 +281,7 @@ export class PlayerObject implements IPlayer {
   prestigeSourceFile: () => void;
   calculateSkill: (exp: number, mult?: number) => number;
   calculateSkillProgress: (exp: number, mult?: number) => ISkillProgress;
-  resetWorkStatus: (generalType?: string, group?: string, workType?: string) => void;
+  resetWorkStatus: (generalType?: WorkType, group?: string, workType?: string) => void;
   getWorkHackExpGain: () => number;
   getWorkStrExpGain: () => number;
   getWorkDefExpGain: () => number;
@@ -296,6 +301,10 @@ export class PlayerObject implements IPlayer {
   setMult: (name: string, mult: number) => void;
   canAccessCotMG: () => boolean;
   sourceFileLvl: (n: number) => number;
+  startGraftAugmentationWork: (augmentationName: string, time: number) => void;
+  graftAugmentationWork: (numCycles: number) => boolean;
+  finishGraftAugmentationWork: (cancelled: boolean, singularity?: boolean) => string;
+  applyEntropy: (stacks?: number) => void;
 
   constructor() {
     //Skills and stats
@@ -348,7 +357,7 @@ export class PlayerObject implements IPlayer {
     this.faction_rep_mult = 1;
 
     //Money
-    this.money = 1000;
+    this.money = 1000 + CONSTANTS.Donations;
 
     //Location information
     this.city = CityName.Sector12;
@@ -363,11 +372,11 @@ export class PlayerObject implements IPlayer {
     this.companyName = ""; // Name of Company. Must match a key value in Companies ma;
 
     // Servers
-    this.currentServer = ""; //IP address of Server currently being accessed through termina;
-    this.purchasedServers = []; //IP Addresses of purchased server;
+    this.currentServer = ""; //hostname of Server currently being accessed through termina;
+    this.purchasedServers = []; //hostnames of purchased server;
 
     // Hacknet Nodes/Servers
-    this.hacknetNodes = []; // Note= For Hacknet Servers, this array holds the IP addresses of the server;
+    this.hacknetNodes = []; // Note= For Hacknet Servers, this array holds the hostnames of the server;
     this.hashManager = new HashManager();
 
     //Factions
@@ -390,7 +399,7 @@ export class PlayerObject implements IPlayer {
     //Flags/variables for working (Company, Faction, Creating Program, Taking Class)
     this.isWorking = false;
     this.focus = false;
-    this.workType = "";
+    this.workType = WorkType.None;
     this.workCostMult = 1;
     this.workExpMult = 1;
 
@@ -419,9 +428,12 @@ export class PlayerObject implements IPlayer {
     this.createProgramName = "";
     this.createProgramReqLvl = 0;
 
-    this.className = "";
+    this.graftAugmentationName = "";
+    this.timeWorkedGraftAugmentation = 0;
 
-    this.crimeType = "";
+    this.className = ClassType.None;
+
+    this.crimeType = CrimeType.None;
 
     this.timeWorked = 0; //in m;
     this.timeWorkedCreateProgram = 0;
@@ -452,15 +464,16 @@ export class PlayerObject implements IPlayer {
     this.bladeburner = null;
     this.bladeburner_max_stamina_mult = 1;
     this.bladeburner_stamina_gain_mult = 1;
-    this.bladeburner_analysis_mult = 1; //Field Analysis Onl;
+    this.bladeburner_analysis_mult = 1; //Field Analysis Only
     this.bladeburner_success_chance_mult = 1;
 
     // Sleeves & Re-sleeving
     this.sleeves = [];
-    this.resleeves = [];
-    this.sleevesFromCovenant = 0; // # of Duplicate sleeves purchased from the covenan;
+    this.sleevesFromCovenant = 0; // # of Duplicate sleeves purchased from the covenant
     //bitnode
     this.bitNodeN = 1;
+
+    this.entropy = 0;
 
     //Used to store the last update time.
     this.lastUpdate = 0;
@@ -471,8 +484,8 @@ export class PlayerObject implements IPlayer {
     this.playtimeSinceLastBitnode = 0;
 
     // Keep track of where money comes from
-    this.moneySourceA = new MoneySourceTracker(); // Where money comes from since last-installed Augmentatio;
-    this.moneySourceB = new MoneySourceTracker(); // Where money comes from for this entire BitNode ru;
+    this.moneySourceA = new MoneySourceTracker(); // Where money comes from since last-installed Augmentation
+    this.moneySourceB = new MoneySourceTracker(); // Where money comes from for this entire BitNode run
     // Production since last Augmentation installation
     this.scriptProdSinceLastAug = 0;
 
@@ -541,6 +554,9 @@ export class PlayerObject implements IPlayer {
     this.startCreateProgramWork = generalMethods.startCreateProgramWork;
     this.createProgramWork = generalMethods.createProgramWork;
     this.finishCreateProgramWork = generalMethods.finishCreateProgramWork;
+    this.startGraftAugmentationWork = generalMethods.startGraftAugmentationWork;
+    this.graftAugmentationWork = generalMethods.craftAugmentationWork;
+    this.finishGraftAugmentationWork = generalMethods.finishGraftAugmentationWork;
     this.startClass = generalMethods.startClass;
     this.takeClass = generalMethods.takeClass;
     this.finishClass = generalMethods.finishClass;
@@ -577,7 +593,7 @@ export class PlayerObject implements IPlayer {
     this.gainCodingContractReward = generalMethods.gainCodingContractReward;
     this.travel = generalMethods.travel;
     this.gotoLocation = generalMethods.gotoLocation;
-    this.canAccessResleeving = generalMethods.canAccessResleeving;
+    this.canAccessGrafting = generalMethods.canAccessGrafting;
     this.giveExploit = generalMethods.giveExploit;
     this.giveAchievement = generalMethods.giveAchievement;
     this.getIntelligenceBonus = generalMethods.getIntelligenceBonus;
@@ -590,6 +606,7 @@ export class PlayerObject implements IPlayer {
     this.hasCorporation = corporationMethods.hasCorporation;
     this.startCorporation = corporationMethods.startCorporation;
     this.canAccessGang = gangMethods.canAccessGang;
+    this.isAwareOfGang = gangMethods.isAwareOfGang;
     this.getGangFaction = gangMethods.getGangFaction;
     this.getGangName = gangMethods.getGangName;
     this.hasGangWith = gangMethods.hasGangWith;
@@ -602,7 +619,7 @@ export class PlayerObject implements IPlayer {
     this.getUpgradeHomeRamCost = serverMethods.getUpgradeHomeRamCost;
     this.getUpgradeHomeCoresCost = serverMethods.getUpgradeHomeCoresCost;
     this.createHacknetServer = serverMethods.createHacknetServer;
-    this.factionWorkType = "";
+    this.factionWorkType = PlayerFactionWorkType.None;
     this.committingCrimeThruSingFn = false;
     this.singFnCrimeWorkerScript = null;
 
@@ -611,6 +628,8 @@ export class PlayerObject implements IPlayer {
 
     this.canAccessCotMG = generalMethods.canAccessCotMG;
     this.sourceFileLvl = generalMethods.sourceFileLvl;
+
+    this.applyEntropy = augmentationMethods.applyEntropy;
   }
 
   /**

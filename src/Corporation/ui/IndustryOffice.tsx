@@ -8,8 +8,8 @@ import { EmployeePositions } from "../EmployeePositions";
 
 import { numeralWrapper } from "../../ui/numeralFormat";
 
-import { UpgradeOfficeSizeModal } from "./UpgradeOfficeSizeModal";
-import { ThrowPartyModal } from "./ThrowPartyModal";
+import { UpgradeOfficeSizeModal } from "./modals/UpgradeOfficeSizeModal";
+import { ThrowPartyModal } from "./modals/ThrowPartyModal";
 import { Money } from "../../ui/React/Money";
 import { useCorporation, useDivision } from "./Context";
 
@@ -431,17 +431,21 @@ export function IndustryOffice(props: IProps): React.ReactElement {
       <Typography>
         Size: {props.office.employees.length} / {props.office.size} employees
       </Typography>
-      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', width: 'fit-content' }}>
-        <Box sx={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+      <Box sx={{ display: "grid", gridTemplateColumns: "1fr", width: "fit-content" }}>
+        <Box sx={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
           <Tooltip title={<Typography>Automatically hires an employee and gives him/her a random name</Typography>}>
-            <Button disabled={props.office.atCapacity()} onClick={autohireEmployeeButtonOnClick}>
-              Hire Employee
-            </Button>
+            <span>
+              <Button disabled={props.office.atCapacity()} onClick={autohireEmployeeButtonOnClick}>
+                Hire Employee
+              </Button>
+            </span>
           </Tooltip>
           <Tooltip title={<Typography>Upgrade the office's size so that it can hold more employees!</Typography>}>
-            <Button disabled={corp.funds < 0} onClick={() => setUpgradeOfficeSizeOpen(true)}>
-              Upgrade size
-            </Button>
+            <span>
+              <Button disabled={corp.funds < 0} onClick={() => setUpgradeOfficeSizeOpen(true)}>
+                Upgrade size
+              </Button>
+            </span>
           </Tooltip>
           <UpgradeOfficeSizeModal
             rerender={props.rerender}
@@ -455,9 +459,11 @@ export function IndustryOffice(props: IProps): React.ReactElement {
               <Tooltip
                 title={<Typography>Throw an office party to increase your employee's morale and happiness</Typography>}
               >
-                <Button disabled={corp.funds < 0} onClick={() => setThrowPartyOpen(true)}>
-                  Throw Party
-                </Button>
+                <span>
+                  <Button disabled={corp.funds < 0} onClick={() => setThrowPartyOpen(true)}>
+                    Throw Party
+                  </Button>
+                </span>
               </Tooltip>
               <ThrowPartyModal
                 rerender={props.rerender}
@@ -467,7 +473,6 @@ export function IndustryOffice(props: IProps): React.ReactElement {
               />
             </>
           )}
-
         </Box>
         <SwitchButton manualMode={employeeManualAssignMode} switchMode={setEmployeeManualAssignMode} />
       </Box>

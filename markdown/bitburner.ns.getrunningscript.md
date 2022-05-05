@@ -9,7 +9,7 @@ Get general info about a running script.
 <b>Signature:</b>
 
 ```typescript
-getRunningScript(filename?: FilenameOrPID, hostname?: string, ...args: (string | number)[]): RunningScript;
+getRunningScript(filename?: FilenameOrPID, hostname?: string, ...args: (string | number)[]): RunningScript | null;
 ```
 
 ## Parameters
@@ -22,13 +22,13 @@ getRunningScript(filename?: FilenameOrPID, hostname?: string, ...args: (string |
 
 <b>Returns:</b>
 
-[RunningScript](./bitburner.runningscript.md)
+[RunningScript](./bitburner.runningscript.md) \| null
 
-info about a running script
+The info about the running script if found, and null otherwise.
 
 ## Remarks
 
 RAM cost: 0.3 GB
 
-Running with no args returns curent script. If you use a PID as the first parameter, the hostname and args parameters are unnecessary.
+Running with no args returns current script. If you use a PID as the first parameter, the hostname and args parameters are unnecessary.
 

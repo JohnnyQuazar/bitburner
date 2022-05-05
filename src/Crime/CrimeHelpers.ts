@@ -9,7 +9,7 @@ export function determineCrimeSuccess(p: IPlayer, type: string): boolean {
   let found = false;
   for (const i of Object.keys(Crimes)) {
     const crime = Crimes[i];
-    if (crime.type == type) {
+    if (crime.type === type) {
       chance = crime.successRate(p);
       found = true;
       break;
@@ -20,14 +20,7 @@ export function determineCrimeSuccess(p: IPlayer, type: string): boolean {
     dialogBoxCreate(`ERR: Unrecognized crime type: ${type} This is probably a bug please contact the developer`);
     return false;
   }
-
-  if (Math.random() <= chance) {
-    //Success
-    return true;
-  } else {
-    //Failure
-    return false;
-  }
+  return Math.random() <= chance;
 }
 
 export function findCrime(roughName: string): Crime | null {

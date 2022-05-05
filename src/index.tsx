@@ -38,3 +38,9 @@ function rerender(): void {
     return "Your work will be lost.";
   };
 })();
+
+(function () {
+  window.print = () => {
+    throw new Error("You accidentally called window.print instead of ns.print");
+  };
+})();

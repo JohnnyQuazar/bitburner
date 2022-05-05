@@ -72,6 +72,7 @@ import { vim } from "./commands/vim";
 import { weaken } from "./commands/weaken";
 import { wget } from "./commands/wget";
 import { hash } from "../hash/hash";
+import { apr1 } from "./commands/apr1";
 
 export class Terminal implements ITerminal {
   // Flags to determine whether the player is currently running a hack or an analyze
@@ -620,7 +621,6 @@ export class Terminal implements ITerminal {
       const n00dlesServ = GetServer("n00dles");
       if (n00dlesServ == null) {
         throw new Error("Could not get n00dles server");
-        return;
       }
       switch (ITutorial.currStep) {
         case iTutorialSteps.TerminalHelp:
@@ -718,7 +718,11 @@ export class Terminal implements ITerminal {
           }
           break;
         case iTutorialSteps.TerminalCreateScript:
-          if (commandArray.length == 2 && commandArray[0] == "nano" && commandArray[1] == "n00dles.script") {
+          if (
+            commandArray.length == 2 &&
+            commandArray[0] == "nano" &&
+            (commandArray[1] == "n00dles.script" || commandArray[1] == "n00dles.js")
+          ) {
             iTutorialNextStep();
           } else {
             this.error("Bad command. Please follow the tutorial");
@@ -734,7 +738,11 @@ export class Terminal implements ITerminal {
           }
           break;
         case iTutorialSteps.TerminalRunScript:
-          if (commandArray.length == 2 && commandArray[0] == "run" && commandArray[1] == "n00dles.script") {
+          if (
+            commandArray.length == 2 &&
+            commandArray[0] == "run" &&
+            (commandArray[1] == "n00dles.script" || commandArray[1] == "n00dles.js")
+          ) {
             iTutorialNextStep();
           } else {
             this.error("Bad command. Please follow the tutorial");
@@ -742,7 +750,11 @@ export class Terminal implements ITerminal {
           }
           break;
         case iTutorialSteps.ActiveScriptsToTerminal:
-          if (commandArray.length == 2 && commandArray[0] == "tail" && commandArray[1] == "n00dles.script") {
+          if (
+            commandArray.length == 2 &&
+            commandArray[0] == "tail" &&
+            (commandArray[1] == "n00dles.script" || commandArray[1] == "n00dles.js")
+          ) {
             iTutorialNextStep();
           } else {
             this.error("Bad command. Please follow the tutorial");
@@ -806,6 +818,7 @@ export class Terminal implements ITerminal {
       scp: scp,
       sudov: sudov,
       tail: tail,
+      apr1: apr1,
       top: top,
       unalias: unalias,
       vim: vim,

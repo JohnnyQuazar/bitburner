@@ -11,6 +11,7 @@ import { numeralWrapper } from "../../ui/numeralFormat";
 import { BitNodeMultipliers } from "../../BitNode/BitNodeMultipliers";
 import { BitFlumeEvent } from "../../BitNode/ui/BitFlumeModal";
 import { calculateHackingTime, calculateGrowTime, calculateWeakenTime } from "../../Hacking";
+import { FactionNames } from "../../Faction/data/FactionNames";
 
 function requireHackingLevel(lvl: number) {
   return function (p: IPlayer) {
@@ -306,7 +307,7 @@ export const programsMetadata: IProgramCreationParams[] = [
     name: "fl1ght.exe",
     create: null,
     run: (router: IRouter, terminal: ITerminal, player: IPlayer): void => {
-      const numAugReq = Math.round(BitNodeMultipliers.DaedalusAugsRequirement * 30);
+      const numAugReq = BitNodeMultipliers.DaedalusAugsRequirement;
       const fulfilled = player.augmentations.length >= numAugReq && player.money > 1e11 && player.hacking >= 2500;
       if (!fulfilled) {
         terminal.print(`Augmentations: ${player.augmentations.length} / ${numAugReq}`);
@@ -316,7 +317,7 @@ export const programsMetadata: IProgramCreationParams[] = [
       }
 
       terminal.print("We will contact you.");
-      terminal.print("-- Daedalus --");
+      terminal.print(`-- ${FactionNames.Daedalus} --`);
     },
   },
 ];

@@ -77,7 +77,7 @@ export class BaseServer {
   // Script files on this Server
   scripts: Script[] = [];
 
-  // Contains the IP Addresses of all servers that are immediately
+  // Contains the hostnames of all servers that are immediately
   // reachable from this one
   serversOnNetwork: string[] = [];
 
@@ -164,7 +164,7 @@ export class BaseServer {
     return false;
   }
 
-  removeContract(contract: CodingContract): void {
+  removeContract(contract: CodingContract | string): void {
     if (contract instanceof CodingContract) {
       this.contracts = this.contracts.filter((c) => {
         return c.fn !== contract.fn;
@@ -249,6 +249,19 @@ export class BaseServer {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   updateRamUsed(ram: number, player: IPlayer): void {
     this.ramUsed = ram;
+  }
+
+  pushProgram(program: string): void {
+    if (this.programs.includes(program)) return;
+
+    // Remove partially created program if there is one
+    const existingPartialExeIndex = this.programs.findIndex((p) => p.startsWith(program));
+    // findIndex returns -1 if there is no match, we only want to splice on a match
+    if (existingPartialExeIndex > -1) {
+      this.programs.splice(existingPartialExeIndex, 1);
+    }
+
+    this.programs.push(program);
   }
 
   /**

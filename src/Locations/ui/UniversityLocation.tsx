@@ -17,6 +17,8 @@ import { Money } from "../../ui/React/Money";
 import { use } from "../../ui/Context";
 import { Box } from "@mui/material";
 
+import { ClassType } from "../../utils/WorkType";
+
 type IProps = {
   loc: Location;
 };
@@ -32,7 +34,7 @@ export function UniversityLocation(props: IProps): React.ReactElement {
     return props.loc.costMult * discount;
   }
 
-  function take(stat: string): void {
+  function take(stat: ClassType): void {
     const loc = props.loc;
     player.startClass(calculateCost(), loc.expMult, stat);
     player.startFocusing();
@@ -40,27 +42,27 @@ export function UniversityLocation(props: IProps): React.ReactElement {
   }
 
   function study(): void {
-    take(CONSTANTS.ClassStudyComputerScience);
+    take(ClassType.StudyComputerScience);
   }
 
   function dataStructures(): void {
-    take(CONSTANTS.ClassDataStructures);
+    take(ClassType.DataStructures);
   }
 
   function networks(): void {
-    take(CONSTANTS.ClassNetworks);
+    take(ClassType.Networks);
   }
 
   function algorithms(): void {
-    take(CONSTANTS.ClassAlgorithms);
+    take(ClassType.Algorithms);
   }
 
   function management(): void {
-    take(CONSTANTS.ClassManagement);
+    take(ClassType.Management);
   }
 
   function leadership(): void {
-    take(CONSTANTS.ClassLeadership);
+    take(ClassType.Leadership);
   }
 
   const costMult: number = calculateCost();
@@ -75,7 +77,7 @@ export function UniversityLocation(props: IProps): React.ReactElement {
   const earnCharismaExpTooltip = `Gain charisma experience!`;
 
   return (
-    <Box sx={{ display: 'grid', width: 'fit-content' }}>
+    <Box sx={{ display: "grid", width: "fit-content" }}>
       <Tooltip title={earnHackingExpTooltip}>
         <Button onClick={study}>Study Computer Science (free)</Button>
       </Tooltip>

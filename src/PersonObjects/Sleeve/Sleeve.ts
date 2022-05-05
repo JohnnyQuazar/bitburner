@@ -433,7 +433,7 @@ export class Sleeve extends Person {
   }
 
   /**
-   * Called on every sleeve for a Source File prestige
+   * Called on every sleeve for a Source File Prestige
    */
   prestige(p: IPlayer): void {
     // Reset exp
@@ -453,6 +453,10 @@ export class Sleeve extends Person {
     // Reset augs and multipliers
     this.augmentations = [];
     this.resetMultipliers();
+
+    // Reset Location
+
+    this.city = CityName.Sector12;
 
     // Reset sleeve-related stats
     this.shock = 1;
@@ -513,6 +517,14 @@ export class Sleeve extends Person {
         if (!(fac instanceof Faction)) {
           console.error(`Invalid faction for Sleeve task: ${this.currentTaskLocation}`);
           break;
+        }
+
+        // If the player has a gang with the faction the sleeve is working
+        // for, we need to reset the sleeve's task
+        if (p.gang) {
+          if (fac.name === p.gang.facName) {
+            this.resetTaskStatus();
+          }
         }
 
         fac.playerReputation += this.getRepGain(p) * cyclesUsed;
@@ -674,7 +686,7 @@ export class Sleeve extends Person {
   }
 
   tryBuyAugmentation(p: IPlayer, aug: Augmentation): boolean {
-    if (!p.canAfford(aug.startingCost)) {
+    if (!p.canAfford(aug.baseCost)) {
       return false;
     }
 
@@ -683,7 +695,7 @@ export class Sleeve extends Person {
       return false;
     }
 
-    p.loseMoney(aug.startingCost, "sleeves");
+    p.loseMoney(aug.baseCost, "sleeves");
     this.installAugmentation(aug);
     return true;
   }
@@ -855,10 +867,8 @@ export class Sleeve extends Person {
    * Returns boolean indicating success
    */
   workForFaction(p: IPlayer, factionName: string, workType: string): boolean {
-    if (factionName === "") {
-      return false;
-    }
-    if (!(Factions[factionName] instanceof Faction) || !p.factions.includes(factionName)) {
+    const faction = Factions[factionName];
+    if (factionName === "" || !faction || !(faction instanceof Faction) || !p.factions.includes(factionName)) {
       return false;
     }
 
@@ -868,7 +878,7 @@ export class Sleeve extends Person {
       this.resetTaskStatus();
     }
 
-    const factionInfo = Factions[factionName].getInfo();
+    const factionInfo = faction.getInfo();
 
     // Set type of work (hacking/field/security), and the experience gains
     const sanitizedWorkType: string = workType.toLowerCase();
