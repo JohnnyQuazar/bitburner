@@ -7,6 +7,7 @@ type ITextModel = monaco.editor.ITextModel;
 import { OptionsModal } from "./OptionsModal";
 import { Options } from "./Options";
 import { isValidFilePath } from "../../Terminal/DirectoryHelpers";
+import { isValidRegularFile } from "../../Script/isValidRegularFile";
 import { IPlayer } from "../../PersonObjects/IPlayer";
 import { IRouter } from "../../ui/Router";
 import { dialogBoxCreate } from "../../ui/React/DialogBox";
@@ -247,12 +248,19 @@ export function Root(props: IProps): React.ReactElement {
     };
   }, [options, editorRef, editor, vimEditor]);
 
+  // Decides what language support gets used to open files with.
+  function chooseLanguage(fn : string) : string {
+    if (fn.endsWith(".json")) return "json";
+    if (fn.endsWith(".txt")) return "plaintext";
+    return "javascript";
+  }
+
   // Generates a new model for the script
   function regenerateModel(script: OpenScript): void {
     if (monacoRef.current !== null) {
       script.model = monacoRef.current.editor.createModel(
         script.code,
-        script.fileName.endsWith(".txt") ? "plaintext" : "javascript",
+        chooseLanguage(script.fileName)
       );
     }
   }
@@ -268,7 +276,7 @@ export function Root(props: IProps): React.ReactElement {
   );
 
   async function updateRAM(newCode: string): Promise<void> {
-    if (currentScript != null && currentScript.fileName.endsWith(".txt")) {
+    if (currentScript != null && isValidRegularFile(currentScript.fileName)) {
       debouncedSetRAM("N/A", [["N/A", ""]]);
       return;
     }
@@ -418,8 +426,11 @@ export function Root(props: IProps): React.ReactElement {
             code,
             props.hostname,
             new monacoRef.current.Position(0, 0),
-            monacoRef.current.editor.createModel(code, filename.endsWith(".txt") ? "plaintext" : "javascript"),
+            monacoRef.current.editor.createModel(code, chooseLanguage(filename)),
           );
+
+          console.log(monaco.languages.getLanguages())
+
           openScripts.push(newScript);
           currentScript = { ...newScript };
           editorRef.current.setModel(newScript.model);
@@ -516,7 +527,7 @@ export function Root(props: IProps): React.ReactElement {
         server.scripts,
       );
       server.scripts.push(script);
-    } else if (scriptToSave.fileName.endsWith(".txt")) {
+    } else if (isValidRegularFile(scriptToSave.fileName)) {
       for (let i = 0; i < server.textFiles.length; ++i) {
         if (server.textFiles[i].fn === scriptToSave.fileName) {
           server.textFiles[i].write(scriptToSave.code);
@@ -604,7 +615,7 @@ export function Root(props: IProps): React.ReactElement {
         server.scripts,
       );
       server.scripts.push(script);
-    } else if (currentScript.fileName.endsWith(".txt")) {
+    } else if (isValidRegularFile(currentScript.fileName)) {
       for (let i = 0; i < server.textFiles.length; ++i) {
         if (server.textFiles[i].fn === currentScript.fileName) {
           server.textFiles[i].write(currentScript.code);
