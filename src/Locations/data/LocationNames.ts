@@ -64,6 +64,7 @@ export enum LocationName {
   VolhavenOmniaCybersystems = "Omnia Cybersystems",
   VolhavenSysCoreSecurities = "SysCore Securities",
   VolhavenZBInstituteOfTechnology = "ZB Institute of Technology",
+  VolhavenPawnShop = "Johnny's Pawn Shop",
 
   // Generic locations
   Hospital = "Hospital",

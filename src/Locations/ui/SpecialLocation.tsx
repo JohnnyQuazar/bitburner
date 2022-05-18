@@ -334,6 +334,10 @@ export function SpecialLocation(props: IProps): React.ReactElement {
     case LocationName.NewTokyoArcade: {
       return <ArcadeRoot />;
     }
+    case LocationName.VolhavenPawnShop: {
+      return renderNoodleBar();
+    }
+
     default:
       console.error(`Location ${props.loc.name} doesn't have any special properties`);
       return <></>;

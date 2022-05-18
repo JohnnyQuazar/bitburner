@@ -204,7 +204,7 @@ Cities[CityName.Volhaven].asciiArt = `
               /  [computek]  |             /                                    
              /       A-------o------I-----o                                     
           1 o                |            |                                     
-                             |    [zb]    o 77                                  
+                             |    [zb]    N [johnny's pawn shop]                
                   [lexocorp] C                                                  
                              |                                                  
                              o                                                  

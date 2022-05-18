@@ -79,6 +79,23 @@ interface IServerMetadata {
 export const serverMetadata: IServerMetadata[] = [
   {
     hackDifficulty: 99,
+    hostname: "pawnshop",
+    moneyAvailable: {
+      max: 50e9,
+      min: 30e9,
+    },
+    networkLayer: 9,
+    numOpenPortsRequired: 5,
+    organizationName: LocationName.VolhavenPawnShop,
+    requiredHackingSkill: {
+      max: 1050,
+      min: 950,
+    },
+    serverGrowth: 65,
+    specialName: LocationName.VolhavenPawnShop,
+  },
+  {
+    hackDifficulty: 99,
     hostname: LocationName.AevumECorp.toLowerCase(),
     moneyAvailable: {
       max: 70e9,

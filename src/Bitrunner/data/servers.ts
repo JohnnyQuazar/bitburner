@@ -1,4 +1,7 @@
 export const bitrunnerServerData : Record<string, Record<string, number>> = {
+  "pawnshop": {
+    "proxyHealth": 0
+  },
   "ecorp": {
     "proxyHealth": 0
   },

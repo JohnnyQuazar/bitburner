@@ -455,4 +455,9 @@ export const LocationsMetadata: IConstructorParams[] = [
     name: LocationName.IshimaGlitch,
     types: [LocationType.Special],
   },
+  {
+    city: CityName.Volhaven,
+    name: LocationName.VolhavenPawnShop,
+    types: [LocationType.Special],
+  },
 ];
