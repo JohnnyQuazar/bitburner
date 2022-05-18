@@ -72,7 +72,7 @@ export function prestigeAugmentation(): void {
   }
 
   // Re-create foreign servers
-  initForeignServers(Player.getHomeComputer());
+  initForeignServers(Player.getHomeComputer(), Player.bitNodeN);
 
   // Gain favor for Companies
   for (const member of Object.keys(Companies)) {
@@ -194,7 +194,7 @@ export function prestigeSourceFile(flume: boolean): void {
   prestigeHomeComputer(Player, homeComp);
 
   // Re-create foreign servers
-  initForeignServers(Player.getHomeComputer());
+  initForeignServers(Player.getHomeComputer(), Player.bitNodeN);
 
   if (Player.sourceFileLvl(9) >= 2) {
     homeComp.setMaxRam(128);

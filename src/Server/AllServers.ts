@@ -11,6 +11,7 @@ import { Reviver } from "../utils/JSONReviver";
 import { isValidIPAddress } from "../utils/helpers/isValidIPAddress";
 import { SpecialServers } from "./data/SpecialServers";
 import { BitNodeMultipliers } from "../BitNode/BitNodeMultipliers";
+import { BitrunnerServerExtension } from "../Bitrunner/ServerExtension";
 
 /**
  * Map of all Servers that exist in the game
@@ -115,7 +116,7 @@ interface IServerParams {
   [key: string]: any;
 }
 
-export function initForeignServers(homeComputer: Server): void {
+export function initForeignServers(homeComputer: Server, bitNodeN : number): void {
   /* Create a randomized network for all the foreign servers */
   //Groupings for creating a randomized network
   const networkLayers: Server[][] = [];
@@ -163,6 +164,10 @@ export function initForeignServers(homeComputer: Server): void {
     const server = new Server(serverParams);
     for (const filename of metadata.literature || []) {
       server.messages.push(filename);
+    }
+
+    if(bitNodeN === 14) {
+      server.modules.bitrunner = new BitrunnerServerExtension(server.hostname);
     }
 
     if (server.hostname === SpecialServers.WorldDaemon) {

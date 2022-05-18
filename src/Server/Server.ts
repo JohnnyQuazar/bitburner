@@ -6,6 +6,7 @@ import { BitNodeMultipliers } from "../BitNode/BitNodeMultipliers";
 import { createRandomString } from "../utils/helpers/createRandomString";
 import { createRandomIp } from "../utils/IPAddress";
 import { Generic_fromJSON, Generic_toJSON, Reviver } from "../utils/JSONReviver";
+import { ServerExtension } from "./ServerExtension";
 
 export interface IConstructorParams {
   adminRights?: boolean;
@@ -54,6 +55,9 @@ export class Server extends BaseServer {
   // Parameter that affects how effectively this server's money can
   // be increased using the grow() Netscript function
   serverGrowth = 1;
+
+  // TODO: Limit to module class
+  modules : Record<string,ServerExtension> = {}
 
   constructor(params: IConstructorParams = { hostname: "", ip: createRandomIp() }) {
     super(params);

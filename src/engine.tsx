@@ -441,7 +441,7 @@ const Engine: {
       initBitNodeMultipliers(Player);
       Engine.start(); // Run main game loop and Scripts loop
       Player.init();
-      initForeignServers(Player.getHomeComputer());
+      initForeignServers(Player.getHomeComputer(), Player.bitNodeN);
       initCompanies();
       initFactions();
       initAugmentations();
