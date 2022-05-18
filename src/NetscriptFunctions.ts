@@ -73,6 +73,7 @@ import { NetscriptCorporation } from "./NetscriptFunctions/Corporation";
 import { NetscriptFormulas } from "./NetscriptFunctions/Formulas";
 import { NetscriptStockMarket } from "./NetscriptFunctions/StockMarket";
 import { NetscriptGrafting } from "./NetscriptFunctions/Grafting";
+import { NetscriptBitrunner } from "./NetscriptFunctions/Bitrunner";
 import { IPort } from "./NetscriptPort";
 
 import {
@@ -81,6 +82,7 @@ import {
   Player as INetscriptPlayer,
   Gang as IGang,
   Bladeburner as IBladeburner,
+  Bitrunner as IBitrunner,
   Stanek as IStanek,
   Infiltration as IInfiltration,
   RunningScript as IRunningScript,
@@ -114,6 +116,7 @@ interface NS extends INS {
   [key: string]: any;
   gang: IGang;
   bladeburner: IBladeburner;
+  bitrunner: IBitrunner;
   stanek: IStanek;
   infiltration: IInfiltration;
 }
@@ -541,6 +544,7 @@ export function NetscriptFunctions(workerScript: WorkerScript): NS {
   const stockmarket = NetscriptStockMarket(Player, workerScript, helper);
   const ui = NetscriptUserInterface(Player, workerScript, helper);
   const grafting = NetscriptGrafting(Player, workerScript, helper);
+  const bitrunner = NetscriptBitrunner(Player, workerScript, helper);
 
   const base: INS = {
     ...singularity,
@@ -557,6 +561,7 @@ export function NetscriptFunctions(workerScript: WorkerScript): NS {
     formulas: formulas,
     stock: stockmarket,
     grafting: grafting,
+    bitrunner: bitrunner,
     args: workerScript.args,
     hacknet: hacknet,
     sprintf: sprintf,

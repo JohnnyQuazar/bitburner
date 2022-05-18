@@ -56,7 +56,6 @@ export class Server extends BaseServer {
   // be increased using the grow() Netscript function
   serverGrowth = 1;
 
-  // TODO: Limit to module class
   modules : Record<string,ServerExtension> = {}
 
   constructor(params: IConstructorParams = { hostname: "", ip: createRandomIp() }) {

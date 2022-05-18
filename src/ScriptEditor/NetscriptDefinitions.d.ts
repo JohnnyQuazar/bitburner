@@ -534,6 +534,16 @@ export interface Server {
   serverGrowth: number;
 }
 
+
+/**
+ * Bitrunner extension details of a single server.
+ * @public
+ */
+export interface bitrunnerExtension {
+  /** Demo value */
+  proxyHealth: number;
+}
+
 /**
  * All multipliers affecting the difficulty of the current challenge.
  * @public
@@ -1110,6 +1120,25 @@ export interface SleeveTask {
   gymStatType: string;
   /** Faction work type being performed, if any */
   factionWorkType: string;
+}
+
+
+/**
+ * Bitrunner API
+ * @public
+ */
+export interface Bitrunner {
+
+  /**
+   * Returns the Bitrunner serverExtension object for the given server.
+   * Defaults to the running script's server if host is not specified.
+   * @remarks
+   * RAM cost: 1 GB
+   *
+   * @param host - Optional. Hostname for the requested server object.
+   * @returns The requested bitrunner extension object
+   */
+  getServerExtension(host?: string): bitrunnerExtension;
 }
 
 /**
@@ -4505,6 +4534,13 @@ export interface NS {
    * RAM cost: 0 GB
    */
   readonly grafting: Grafting;
+
+  /**
+   * Namespace for bitrunner functions.
+   * @remarks
+   * RAM cost: 0 GB
+   */
+  readonly bitrunner: Bitrunner;
 
   /**
    * Arguments passed into the script.
